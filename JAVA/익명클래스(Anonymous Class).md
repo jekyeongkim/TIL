@@ -117,7 +117,7 @@ public class RunnableExecute {
     }
 }
 ```
-3. MyRunnableMain 클래스
+3. MyRunnableMain 클래스 (1)
 ```java
 public class MyRunnableMain {
     public static void main(String[] args) {
@@ -135,10 +135,62 @@ public class MyRunnableMain {
     }
 }
 ```
+3. MyRunnableMain 클래스 (2) (익명 객체 생성하는 코드를 파라미터로 바로 넣어버림)
+```java
+public class MyRunnableMain {
+    public static void main(String[] args) {
+        
+        RunnableExecute runnableExecute = new RunnableExecute();
+        runnableExecute.execute(        new MyRunnable() {
+            @Override
+            public void run() {
+                System.out.println("hello!!!");
+            }
+        });
+    }
+}
+```
+3. MyRunnableMain 클래스 (3) (람다)
+```java
+public class MyRunnableMain {
+    public static void main(String[] args) {
+        
+        RunnableExecute runnableExecute = new RunnableExecute();
+        runnableExecute.execute(() -> {
+                System.out.println("hello!!!");
+            }
+        ); // 파라미터로 MyRunnable 타입이 들어가야 함
+    }
+}
+```
 4. 출력 결과
 ```text
 hello!!!
 ```
+
+---
+### 람다(Lambda)
+이름 없는 객체를 간략화하여 표현한 것</br>
+람다(lambda) 인터페이스는 메소드를 1개 가지고 있다.</br>
+나중에 스트림(Stream) api와 엮여서 쓰이게 되면 편리하게 작성할 수 있다.
+```java
+MyRunnable myRunnable = new MyRunnable() {
+            @Override
+            public void run() {
+                System.out.println("hello!!!");
+            }
+        };
+```
+```java
+() -> {
+    System.out.println("hello!!!");
+}
+```
+위 식을 람라로 표현하면 다음과 같음<br>
+`() ->` 는 `run()` 메소드까지를 의미
+
+---
+
 <br/><br/>
 
 >**Reference**

@@ -118,6 +118,8 @@ System.out.println(ex.toString());
 }
 ```
 
+---
+
 ### 예외 떠넘기기(`throws`) 적용
 `value = i / k;` </br>
 이 부분에서 Exception(`ArithmeticException`)이 발생하는데 여기서 발생하는 Exceptino을 `divide()` 메소드에서 처리하지 않고 `divide()` 메소드를 호출하는 쪽에 떠넘길 수가 있음.</br>
@@ -130,7 +132,7 @@ public class Exception1 {
         // ✅ 메소드를 사용하는 쪽에서 Exception 처리
         try {
           int value = exobj.divide(10, 0);
-          System.out.println(value);
+          System.out.println(value); // 0으로 나눌 수 없기 때문에 이 부분은 실행 ❌
         }catch (ArithmeticException ex){
           System.out.println("0으로 나눌 수 없습니다.");
         }
@@ -154,6 +156,65 @@ public class ExceptionObj1 {
     }
 }
 ```
+```text
+0으로 나눌 수 없습니다.
+```
+A 사용자는 `ExceptionObj1` 클래스에 해당되는 api 도큐먼트를 제공, 도큐먼트에는 `divide()` 메소드가 `ArithmeticException`을 발생한다고 정의해놓음.</br>
+
+B 사용자는 `ExceptionObj1` 클래스를 사용하는데 오류없이 실행되게끔 만드려면 `divide()` 메소드가 사용되는 곳을 `try-catch`로 묶어준 뒤, 메소드에서 발생할 수 있는 `ArithmeticException`를 처리해주면 됨!
+
+---
+
+### `RuntimeException`과 `Checked Exception`
+![img_4.png](img_4.png)
+
+`RuntimeException`
+* 실행 시에 오류가 나서 프로그램이 종료되는 Exception, 특별한 경우에만 오류가 발생
+* Exception 처리를 따로 해주지 않아도 컴파일이 가능
+* `RuntimeException` 클래스를 상속받고 있는 Exception은 전부 `RuntimeException`이다.
+* `ArithmeticException`도 `RuntimeException`에 해당
+
+![img_5.png](img_5.png)
+
+`Checked Exception`
+* `RuntimeException`을 상속받지 않은 기본적인 `Exception`을 상속받고 있는 것들을 모두 `Checked Exception`이라고 함
+* 중간에 `RuntimeException`을 상속받고 있다면 `Checked Exception`이 아님!
+* `IOException`은 `Exception`을 상속받고 있기 때문에 `Checked Exception`에 해당
+
+---
+
+`Checked Exception` 예시
+```java
+import java.io.FileInputStream;
+
+public class Exception4 {
+    public static void main(String[] args) {
+        // 컴파일 오류가 발생한다.
+        FileInputStream fis = new FileInputStream("Exception4.java");
+    }
+}
+```
+올바른 처리
+```java
+import java.io.FileInputStream;
+
+public class Exception4 {
+    public static void main(String[] args) {
+        try {
+            // FileInputStream은 FileNotFoundException을 발생한다고 되어있고
+            // FileNotFoundException Checked Exception을 상속받고 있기 때문에 반드시 Exception 처리를 해줘야 함❗️
+            FileInputStream fis = new FileInputStream("Exception4.java");
+        }catch (FileNotFoundException fnfe){
+            System.out.println("파일을 찾을 수 없습니다.");
+        }
+    }
+}
+```
+
+나만의 Exception을 만든다면 RuntimeException vs Checked Exception 둘 중 어느 것을 상속받는 것이 좋을까❓</br>
+✅ Checked Exception은 되도록 만들지 않는 것이 좋음. RuntimeException을 상속받고 있는 클래스를 만드는 것이 좋음 !</br>
+✅ Checked Exception이 많아지면 처리할 것이 굉장히 많아지기 때문, RuntimeException을 상속받는 Exception을 만들어서 사용자가 알아서 Exception을 처리할 수 있도록 하는 것이 좋음!
+
 <br/><br/>
 
 >**Reference**

@@ -215,6 +215,77 @@ public class Exception4 {
 ✅ Checked Exception은 되도록 만들지 않는 것이 좋음. RuntimeException을 상속받고 있는 클래스를 만드는 것이 좋음 !</br>
 ✅ Checked Exception이 많아지면 처리할 것이 굉장히 많아지기 때문, RuntimeException을 상속받는 Exception을 만들어서 사용자가 알아서 Exception을 처리할 수 있도록 하는 것이 좋음!
 
+
+---
+
+### 다중 Exception 처리
+
+예시 1
+```java
+public class Exception6 {
+    public static void main(String[] args) {
+          int[] array = {4, 0};
+          int[] value = null;
+          try {
+              value[0] = array[0] / array[1];
+          }catch (ArrayIndexOutOfBoundsException aiob){
+            System.out.println(aiob.toString());
+          }catch (ArithmeticException ae){
+            System.out.println(ae.toString());
+          }catch (Exception ex){
+            System.out.println(ex);
+        }
+    }
+}
+```
+4 (배열 0번째 값)를 0 (배열 1번째 값) 로 나눠서 value[0]에 넣으려고 했는데 4는 0으로 나눌 수가 없음!</br>
+**→ ArithmeticException 발생**
+```text
+java.lang.ArithmeticException: / by zero
+```
+
+예시 2
+```java
+public class Exception6 {
+    public static void main(String[] args) {
+          int[] array = {4, 2};
+          int[] value = null;
+          try {
+              value[0] = array[0] / array[1];
+          }catch (ArrayIndexOutOfBoundsException aiob){
+            System.out.println(aiob.toString());
+          }catch (ArithmeticException ae){
+            System.out.println(ae.toString());
+          }catch (Exception ex){
+            System.out.println(ex);
+        }
+    }
+}
+```
+4 (배열 0번째 값)를 2 (배열 1번째 값) 로 나눠서 value[0]에 넣으려고 했는데, value 자체가 null을 참조하고 있기 때문에 값을 넣을 수 가 없음!</br>
+**→ NullPointException 발생 (Exception의 후손 인스턴스이기 때문에 참조 가능)**
+```text
+java.lang.NullPointException
+```
+예시 2 NullPointException 해결 방법
+```java
+public class Exception6 {
+    public static void main(String[] args) {
+          int[] array = {4, 2};
+          // 1개짜리 배열을 선언한다.
+          int[] value = new int[1];
+          try {
+              value[0] = array[0] / array[1];
+          }catch (ArrayIndexOutOfBoundsException aiob){
+            System.out.println(aiob.toString());
+          }catch (ArithmeticException ae){
+            System.out.println(ae.toString());
+          }catch (Exception ex){
+            System.out.println(ex);
+        }
+    }
+}
+```
 <br/><br/>
 
 >**Reference**

@@ -272,7 +272,7 @@ java.lang.NullPointException
 public class Exception6 {
     public static void main(String[] args) {
           int[] array = {4, 2};
-          // 1개짜리 배열을 선언한다.
+          // ✅ 1개를 담을 수 있는 배열을 선언한다.
           int[] value = new int[1];
           try {
               value[0] = array[0] / array[1];
@@ -286,6 +286,81 @@ public class Exception6 {
     }
 }
 ```
+예시 3
+```java
+public class Exception6 {
+    public static void main(String[] args) {
+          int[] array = {4};
+          int[] value = new int[1];
+          try {
+              value[0] = array[0] / array[1];
+          }catch (ArrayIndexOutOfBoundsException aiob){
+            System.out.println(aiob.toString());
+          }catch (ArithmeticException ae){
+            System.out.println(ae.toString());
+          }catch (Exception ex){
+            System.out.println(ex);
+        }
+    }
+}
+```
+array[0]에 대한 값은 있지만 array[1]에 대한 값이 없음, array 범위를 벗어났기 때문에</br>
+**→ ArrayIndexOutOfBoundsException 발생!**
+```text
+java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
+```
+
+---
+
+### 사용자 정의 Exception과 예외 발생시키기(throw)
+```java
+public class MyException extends RuntimeException {
+    // 오류 메시지나, 발생한 Exception을 감싼 결과로 내가 만든 Exception을 사용하고 싶을 때가 많다.
+  
+    // 문자열을 받는 생성자 (message를 전달해주면 부모(RuntimeException)에게 그대로 전달)
+    public MyException(String message){
+        super(message);
+    }
+    
+    // Throwable을 받는 생성자 (Throwable은 또 다른 Exception이나 RuntimeException을 받아들일 수 있음)
+    public MyException(Throwable cause){
+        super(cause);
+    }
+}
+```
+```java
+public class Exception7 {
+    public static void main(String[] args) {
+        try {
+            ExceptionObj7 exobj = new ExceptionObj7();
+            int value = exobj.divide(10, 0); // ✅ 메소드를 사용해주는 쪽에서 Exception 처리
+            System.out.println(value);
+        }catch (MyException ex){
+            System.out.println("사용자 정의 Exception이 발생했네요.");
+        }
+    }
+}
+
+class ExceptionObj7 {
+    public int divide(int i, int k) throws MyException{
+        int value = 0;
+        try {
+            value = i / k;
+        }catch (ArithmeticException ae){
+            throw new MyException("0으로 나눌 수 없습니다."); // ✅ MyException을 new로 생성하여 throw
+        }
+        return value;
+    }
+}
+```
+원래 i / k 라고 하면 k = 0일 때는 0으로 나눌 수 없기 때문에</br>
+JVM이 ArithmeticException라는 인스턴스를 생성하여 try 쪽에서 throw 해주면서 catch로 받아들이는데</br>
+catch로 받은 것을 프로그래머가 MyException 이라는 것을 new로 생성하면서 throw 해준 것</br>
+그리고 divide() 로 호출해주는 쪽에 넘겨줌
+
+즉, JVM이 try쪽에서 throw 해준 것을 프로그래머가 만든 MyException 으로 다시 Exception을 재생성하여 발생하게 한 것
+그리고 그 메소드를 사용하는 쪽은 MyException을 처리해줘야 함
+
 <br/><br/>
 
 >**Reference**

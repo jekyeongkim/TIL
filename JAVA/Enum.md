@@ -128,6 +128,119 @@ Day day = 5;
 ```
 위와 같은 코드는 사용할 수 없음! (정수 타입이나 문자열 같은 타입의 값들은 할당해줄 수가 없음)
 
+* **Enum은 switch문에서 사용 가능하다. (JDK 7 이상부터는 switch문에서 String도 사용 가능)**
+```java
+package com.example.enumtype;
+
+public class DaySwitchTest {
+    public static void main(String[] args) {
+        // Day 타입의 변수를 선언하고 SUNDAY라는 상수값을 갖게 함
+        Day day = Day.SUNDAY;
+        
+        switch (day){
+            case SUNDAY : // case 부분에는 Day가 갖고 있는 상수만 적여줘야 함 Day.Sunday 이렇게 적으면 ❌
+                System.out.println("일요일입니다.");
+                break; 
+            case MONDAY :
+                System.out.println("월요일입니다.");
+                break;
+            default :
+                System.out.println("그 밖의 요일");
+        }
+    }
+}
+```
+* day가 어떤 상수냐에 따라서 알맞은 case 부분이 실행된다.
+* 이 때 조심해야 할 것은 case 다음에는 Day가 가지고 있는 상수의 이름이 나와야 한다는 것이다.
+* case 다음에 Day.SUNDAY 라고 사용하면 컴파일 오류가 발생한다.</br>
+
+실행 결과
+```text
+일요일입니다.
+```
+
+* **Enum은 생성자를 가질 수 있다. 단 생성자는 private 해야 한다.**
+* **Enum의 생성자는 내부에서만 호출 가능하다.**
+```java
+package examples.enumtype;
+
+public enum Gender {
+    // 상수 뒤에 () 가 추가된 형태, 내부적인 생성자를 호출
+    // XY, XX 값이 전달돼서 염색체에 해당하는 chromosome 필드의 값이 초기화 되는 것 → 내부적으로 문자열 값을 갖게 되는 것
+    MALE("XY"),
+    FEMALE("XX");
+    
+    private String chromosome; // 염색체
+    
+    private Gender(String chromosome){
+        this.chromosome = chromosome;
+    }
+}
+```
+* Gender Enum 타입은 MALE과 FEMALE 2가지 상수를 가진다.
+* 앞의 예제와는 다르게 상수 뒤에 ("XY"), ("XX") 가 붙어 있다.
+* 상수 뒤에 괄호 열과 닫고 기호가 있으면 Enum의 생성자를 호출하게 된다.
+* 생성자가 호출되며 chromosome 가 초기화 된다.
+
+```java
+package com.example.enumtype;
+
+public class GenderTest {
+    public static void main(String[] args) {
+        Gender gender = Gender.MALE;
+
+        System.out.println(gender);
+    }
+}
+```
+* Gender 타입의 변수 gender에는 Gender.MALE 이나 Gender.FEMALE 값만 할당할 수 있다.
+* 해당 gender를 출력하면 상수 이름이 그대로 출력되는 것을 알 수 있다.
+
+실행결과
+```text
+MALE
+```
+여기서 MALE, FEMALE 상수 값이 아닌 염색체 XY, XX 값을 출력하고 싶다면 ❓
+
+---
+
+
+### Enum에 메소드와 변수 선언하기
+
+* Enum 안에 선언된 메소드나 변수를 가질 수 있다.
+* 또한 Object 가 가지고 있는 메소드를 오버라이딩 할 수도 있다.
+* Gender Enum을 생성할 때 chromosome 필드를 작성했었다.
+* 이번엔 Gender Enum에 Object 가 가지고 있는 toString() 메소드를 오버라이딩 한다.
+
+```java
+package com.example.enumtype;
+
+public enum Gender {
+
+    MALE("XY"),
+    FEMALE("XX");
+
+    private String chromosome; // 염색체
+
+    private Gender(String chromosome){
+        this.chromosome = chromosome;
+    }
+    
+    // toString() 메소드 오버라이딩
+    @Override
+    public String toString() {
+        return "Gender{" +
+                "chromosome='" + chromosome + '\'' +
+                '}';
+    }
+    
+    // print() 메소드 추가
+    public void print(){
+        System.out.println("염색체 정보 : " + chromosome);
+    }
+}
+```
+
 <br/><br/>
 
 >**Reference**

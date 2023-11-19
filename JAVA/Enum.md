@@ -240,7 +240,107 @@ public enum Gender {
     }
 }
 ```
+```java
+package com.example.enumtype;
 
+public class GenderTest {
+    public static void main(String[] args) {
+        Gender gender = Gender.MALE;
+
+        System.out.println(gender);
+        
+        gender.print();
+    }
+}
+```
+실행 결과
+```text
+Gender{chromosome='XY'}
+염색체 정보 : XY
+```
+
+---
+
+### Enum 값끼리 비교할 때는 ==를 사용한다.
+```java
+Day day1 = Day.MONDAY;
+Day day2 = Day.MONDAY;
+
+if(day1 == day2){
+    System.out.println("같은 요일입니다.");
+}
+```
+
+---
+
+### EnumMap
+EnumMap은 Enum타입을 키(key)로 사용할 수 있도록 도와주는 클래스이다.
+```java
+package com.example.enumtype;
+
+import java.util.EnumMap;
+
+public class EnumMapTest {
+    public static void main(String[] args) {
+        EnumMap emap = new EnumMap(Day.class); // key 값으로 Day에 정의한 상수만 사용한다는 의미
+        emap.put(Day.SUNDAY, "일요일은 잠자는 것이 최고."); // 각각의 key 값으로 문자열 값 지정
+        emap.put(Day.FRIDAY, "불금!!");
+        emap.put(Day.MONDAY, "월요병");
+
+        System.out.println(emap.get(Day.SUNDAY));
+    }
+}
+```
+```text
+일요일은 잠자는 것이 최고.
+```
+
+---
+
+### EnumSet
+EnumSet은 Enum 상수를 Set 자료구조로 다루기 위한 유용한 메소드를 제공하는 클래스이다.</br>
+상수값을 가지는데 중복된 값을 허용하지 않는다.
+```java
+package com.example.enumtype;
+
+import java.util.EnumSet;
+import java.util.Iterator;
+
+public class EnumSetTest {
+    public static void main(String[] args) {
+        EnumSet eset = EnumSet.allOf(Day.class); // allOf(Day.class) → Day가 갖고 있는 모든 상수들을 자동으로 EnumSet에 넣어줌
+        
+        Iterator<Day> dayIter = eset.iterator();
+        
+        while (dayIter.hasNext()) {
+            Day day = dayIter.next();
+            System.out.println(day);
+        }
+        
+        System.out.println("---------------------------------");
+        
+        EnumSet eset2 = EnumSet.range(Day.MONDAY, Day.WEDNESDAY); // range(Day.MONDAY, Day.WEDNESDAY) → Day 상수가 정의되어 있는 사이값에 있는 모든 것을 포함시켜라
+        Iterator<Day> dayIter2 = eset2.iterator();
+        while (dayIter2.hasNext()) {
+            Day day = dayIter2.next();
+            System.out.println(day);
+        }
+    }
+}
+```
+```text
+SUNDAY
+MONDAY
+TUSEDAY
+WEDNESDAY
+THURSDAY
+FRIDAY
+SATURDAY
+---------------------------------
+MONDAY
+TUSEDAY
+WEDNESDAY
+```
 <br/><br/>
 
 >**Reference**

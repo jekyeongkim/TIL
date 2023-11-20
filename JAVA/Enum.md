@@ -328,6 +328,26 @@ public class EnumSetTest {
     }
 }
 ```
+```java
+EnumSet eset = EnumSet.allOf(Day.class);
+```
+* Enum의 static 메소드인 `allOf()` 메소드는 인자로 들어온 Enum 타입의 모든 상수를 가지고 있는 EnumSet 객체를 리턴한다.</br>
+```java
+Iterator<Day> dayIter = eset.iterator();
+        
+while (dayIter.hasNext()) {
+    Day day = dayIter.next();
+    System.out.println(day);
+}
+```
+eset에 저장된 모든 상수를 Iterator를 이용해 출력한다. 모든 상수값이 출력되는 것을 확인할 수 있다.</br>
+
+```java
+EnumSet eset2 = EnumSet.range(Day.MONDAY, Day.WEDNESDAY);
+```
+* EnumSet.range(Day.MONDAY, Day.WEDNESDAY)는 Day.MONDAY 부터 Day.WEDNESDAY 까지의 상수를 가진 EnumSet 객체를 반환한다.
+
+출력 결과
 ```text
 SUNDAY
 MONDAY
@@ -341,7 +361,113 @@ MONDAY
 TUSEDAY
 WEDNESDAY
 ```
+
+---
+
+### Enum은 인터페이스를 구현하고, 해당 인터페이스를 오버라이딩하여 구현할 수 있다.
+1. `print()` 메소드를 갖는 Printer 인터페이스 클래스
+
+```java
+package com.example.enumtype;
+
+public interface Printer {
+    public void print();
+}
+```
+2. Enum 타입인 Color 클래스 (Printer 인터페이스 구현)
+```java
+package com.example.enumtype;
+
+public enum Color implements Printer {
+    RED("FF0000"),
+    GREEN("00FF00"),
+    BLUE("0000FF");
+    
+    private String rgb;
+    
+    private Colr(String rgb){
+        this.rgb = rgb;
+    }
+    
+    @Override
+    public void print() {
+        System.out.println("rgb : " + rgb);
+    }
+}
+```
+3. ColorTest 클래스
+```java
+public class ColorTest {
+    public static void main(String[] args) {
+        Color color = Color.RED;
+        color.print();
+    }
+}
+```
+4. 출력 결과
+```text
+rgb : FF0000
+```
+
+---
+
+### Enum은 추상메소드를 가질 수 있다
+추상 메소드를 가질 경우엔 상수를 정의할 때 추상메소드를 함께 구현해 줘야 한다.
+1. Country 클래스
+```java
+package com.example.enumtype;
+
+public enum Country {
+    KOREA{
+        public void print(){
+            System.out.println("대한민국");
+        }
+    },
+    JAPAN{
+        public void print(){
+            System.out.println("일본");
+        }
+    },
+    USA{
+        public void print(){
+            System.out.println("미국");
+        }
+    };
+    
+    // 추상메소드
+    public abstract void print();
+}
+```
+추상메소드를 갖도록 하면 KOREA, JAPAN, USA처럼 enum 타입을 정의하면서 중괄호 블럭을 선언한 뒤 추상 메소드를 오버라이딩 해줘야 한다.
 <br/><br/>
+2. CountryTest 클래스
+```java
+package example.enumtype;
+
+public class CountryTest {
+    public static void main(String[] args) {
+        Country country = Country.KOREA;
+        country.print();
+    }
+}
+```
+```java
+country.print();
+```
+* country에 Country.KOREA 상수를 대입하기 때문에 KOREA 상수에서 구현된 `print()` 메소드가 사용된다.
+3. 실행 결과
+```text
+대한민국
+```
+
+---
+
+### 그 밖의 특징들
+* Enum 객체는 Enum 상수가 처음 호출되거나 참조될 때 생성된다.
+* Enum 은 Serializable 과 Comparable 인터페이스를 이미 구현하고 있다.</br></br>
+
+
+
 
 >**Reference**
 ><br/>부부개발단 - 즐겁게 프로그래밍 배우기.

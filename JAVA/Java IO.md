@@ -64,6 +64,66 @@ ___
 | Data로 시작               | 다양한 데이터 형을 입출력 할 목적으로 사용. 특히 기본형 값(int, float, double 등)을 출력하는데 유리                         |
 | Buffered로 시작           | 프로그램에서 Buffer라는 말은 메모리를 의미. 입출력 시에 병목현상을 줄이고 싶을 경우 사용                                      |
 | RandomAccessFile       | 입력이나 출력을 모두 할 수 있는 클래스로써, 파일에서 임의의 위치의 내용을 읽거나 쓸 수 있는 기능을 제                                |
+
+---
+
+### Java IO 클래스는 생성자가 중요!!
+* 장식은 InputStream, OutputStream, Reader, Writer를 생성자에서 받아들인다.
+
+Java api java.io 검색 후 공식문서 들어가서 Frames 클릭 → java.io 패키지 접속</br>
+![img_8.png](img_8.png)
+BufferedInputStream 들어가 보면 InputStream을 상속받는 것을 알 수 있음
+![img_9.png](img_9.png)
+생성자를 보면 InputStream을 받아들이는 것을 알 수 있다.</br>
+**InputStream, OutputStream, Reader, Writer를 생성자에서 받아들이는 클래스는 전부 다 장식 역할**</br>
+**InputStream, OutputStream, Reader, Writer를 생성자에서 받아들이지 않는 클래스는 전부 다 주인공 역할**</br>
+File 클래스는 Java IO에서 File 클래스 자체일 뿐 읽고 쓰기 위한 클래스가 아님 (Decorator 패턴 적용 ❌)
+
+***Java IO는 상속관계와 생성자를 잘 보는 것이 중요하다!!***
+
+---
+
+### Java IO를 잘 다루려면, API를 한번쯤은 읽어봐야 함
+
+문제) 키보드로부터 한 줄씩 입력받아 화면에 한 줄씩 출력하시오.
+
+다음과 같은 문제를 해결하려면❓
+
+```java
+public class KeyboardIOExam {
+    public static void main(String[] args) throws Exception{
+        // 이렇게 JVM에게 Exception을 떠넘기는 건 좋지 않지만 코드를 간단하게 적기 위해 작성 
+        
+        // 키보드로부터 한 줄씩 입력받고, 한 줄씩 화면에 출력하시오.
+        // 키보드 : System.in (InputStream 주인공)
+        // 화면에 출력 : System.out (OutputStream 주인공)
+        // 키보드로 입력받는다는 것은 문자를 입력받는 것 : char 단위 입출력
+        // char 단위 입출력 클래스 : Reader, Writer
+        // 한 줄 읽기 : BufferedReader 라는 클래스는 readLine 이라는 메소드를 가지고 있다.
+        //            더 이상 읽어들일 것이 없으면(EOF) null을 반환
+        //            장식!
+        // 한 줄 쓰기 : PrintStream, PrintWriter
+
+
+        // BufferedReader는 장식이기 때문에 생성자로 Reader를 받아들여야 함 → Reader는 추상클래스라 그냥 받지 못하고 자손클래스를 받아야 함❗️
+        
+        // BufferedReader 생성자로 올 수 있는 목록 (
+        // BufferedReader → 🚫
+        // CharReader → 문자로부터 읽어들이므로 🚫
+        // FilterReader → 장식이라 Reader를 넣어줘야 하므로 🚫
+        // InputStreamReader(InputStream in) → 장식 ✅ㅊ
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
+        String line = null; // line 이라는 변수 선언
+        while ( (line = br.readLine()) != null) {// 한 줄 입력받아서 line 변수에 넣어주는데 null이 아닐 때까지 반복하라
+          System.out.println("읽어들인 값 :" + line);
+        }
+    }
+}
+```
+키보드는 System.in → InputStream 타입이며</br>
+InputStreamReader(InputStream in) 은 InputStream을 받아들이므로</br>
+BufferedReader 의 생성자 안에 들어갈 수가 있다!
 <br/><br/>
 
 >**Reference**

@@ -111,11 +111,11 @@ public class KeyboardIOExam {
         // BufferedReader → 🚫
         // CharReader → 문자로부터 읽어들이므로 🚫
         // FilterReader → 장식이라 Reader를 넣어줘야 하므로 🚫
-        // InputStreamReader(InputStream in) → 장식 ✅ㅊ
+        // InputStreamReader(InputStream in) → 장식 ✅
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         
         String line = null; // line 이라는 변수 선언
-        while ( (line = br.readLine()) != null) {// 한 줄 입력받아서 line 변수에 넣어주는데 null이 아닐 때까지 반복하라
+        while ( (line = br.readLine()) != null) {// 한 줄 입력받아서 line 변수에 넣어주는데 null이 아닐 때까지 반복하라 command + D 프로그램 종료
           System.out.println("읽어들인 값 :" + line);
         }
     }
@@ -124,6 +124,121 @@ public class KeyboardIOExam {
 키보드는 System.in → InputStream 타입이며</br>
 InputStreamReader(InputStream in) 은 InputStream을 받아들이므로</br>
 BufferedReader 의 생성자 안에 들어갈 수가 있다!
+![img_10.png](img_10.png)
+* 순서
+
+![img_11.png](img_11.png)
+값을 입력하면 System.in 이 읽어들이고, 읽어들인 것을 InputStreamReader한테 전달하며 이걸 또 BufferedReader에게 전달하며 문자열로 리턴해주는 순서로 구성
+
+***Java IO 가 제공해주는 클래스를 적절하게 이용하게 되면 적절하게 다양한 곳에 유용하게 쓸 수가 있다!!***
+
+---
+
+### File 클래스
+
+* java.io.File 클래스는 파일의 크기, 파일의 접근 권한, 파일의 삭제, 이름 변경 등의 작업을 할 수 있는 기능을 제공
+* 주의해야할 사항은 디렉토리(폴더) 역시 파일로써 취급된다는 점
+
+---
+
+### File 클래스 생성자
+| 클래스 생성자                           | 설명                                       |
+|-----------------------------------|------------------------------------------|
+| File(File parent, String child)   | parent 디렉토리에 child 라는 파일에 대한 File 객체를 생성 |
+| File(String child)                | child 라는 파일에 대한 File 객체를 생성                     |
+| File(String parent, String child) | parent 디렉토리에 child 라는 파일에 대한 File 객체를 생성                      |
+* 파일 인스턴스를 만들었다고 해서 실제 폴더에 파일이 저장되는 것은 아니다!
+
+---
+
+### File 클래스의 중요 메소드
+| File 클래스 메소드             | 설명                                            |
+|--------------------------|-----------------------------------------------|
+| boolean canRead()        | 파일이 읽기 가능할 경우(파일 커미션) true, 그렇지 않으면 false를 반환 |
+| boolean canWrite()       | 파일이 쓰기 가능할 경우(파일 커미션) true, 그렇지 않으면 false를 반환 |
+| boolean createNewFile()  | 지정한 파일이 존재하지 않을 경우 파일을 생성                     |
+| boolean delete()         | 파일을 삭제. 디렉토리일 경우 비어있는 경우 삭제가 된다.              |
+| void deleteOnExit()      | JVM(자바 가상 머신)이 종료될 때, 파일을 삭제                  |
+| boolean exist()          | 파일이 존재할 경우 true, 그렇지 않을 경우 false를 반환          |
+| String getAbsolutePath() | 파일의 절대 경로를 문자열로 반환                            |
+| String getCanonicalPath() | 파일의 전체 경로를 문자열로 반환                            |
+| String getName()         | 파일이나 디렉토리의 이름을 반환                             |
+| String getParent()       | 부모 경로에 대한 경로명을 문자열로 반환                        |
+| File getParentFile()     | 부모 디렉토리를 File의 형태로 반환                         |
+| String getPath()         | 파일의 경로를 문자열의 형태로 반환                           |
+| boolean isDirectory()    | 디렉토리일 경우 true, 그렇지 않을 경우 false를 반환            |
+
+### 예제
+1. FileInfo 클래스
+```java
+import java.io.File;
+import java.io.IOException;
+
+public class FileInfo {
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            System.out.println("사용법 : Java FileInfo 파일이름");
+            System.exit(0); // return; 으로 적어줘도 됨
+        } // if end
+
+        File f = new File(args[0]);
+        if (f.exist()) { // 파일이 존재할 경우
+            System.out.println("length : " + f.length());
+            System.out.println("canRead : " + f.canRead());
+            System.out.println("canWrite : " + f.canWrite());
+            System.out.println("getAbsolutePath : " + f.getAbsolutePath());
+            
+            try {
+                System.out.println("getCanonicaPath : " + f.getCanonicaPath());
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+            
+            System.out.println("getName : " + f.getName());
+            System.out.println("getParent : " + f.getParent());
+            System.out.println("getPath : " + f.getPath());
+        } else { // 파일이 존재하지 않을 경우
+            System.out.println("파일이 존재하지 않습니다.");
+        }
+    } // main end
+}
+```
+2. 출력 결과
+```text
+"사용법 : Java FileInfo 파일이름"
+```
+현재는 아규먼트가 0 이기 때문에 맨 위의 코드가 실행됨
+
+여기서 아규먼트 값으로 . 을 넣어주게 되면
+![img_12.png](img_12.png)
+
+다음과 같이 출력이 되는 것을 볼 수 있다.
+![img_13.png](img_13.png)
+FileInfo 뒤에 . 이 붙은 것을 볼 수 있는데 여기서 . 은 현재 자바가 실행되는 경로를 말함.</br>
+현재 리렉토리를 의미하므로 읽고 쓸 수 있다는 반환값 trueㅇ 출력하는 것을 볼 수 있다.
+
+
+---
+
+### Byte Stream
+![img_14.png](img_14.png)
+
+---
+
+InputStream, OutputStream
+* 추상클래스
+* byte 단위 입출력 클래스는 InputStream, OutputStream의 후손이다.
+
+---
+
+### InputStream 이 가지는 중요 메소드
+| InputStream 클래스 메소드                        | 설명                                                                        |
+|--------------------------------------------|---------------------------------------------------------------------------|
+| int available() throws IOException         | 현재 읽을 수 있는 바이트 수를 반환                                                      |
+| void close() throws IOException            | 입력 스트림을 닫음                                                                |
+| int read() throws IOException              | 입력 스트림에서 한 바이트를 읽어서 int 값으로 반환. 더 이상 읽어들일 내용이 없을 경우 -1을 반환                |
+| int read(byte buf[]) throws IOException    | 입력 스트림에서 buf[] 크기만큼을 읽어 buf에 저장하고 읽은 바이트 수를 반환. 더 이상 읽어들일 내용이 없을 경우 -1을 반환 |
+| int skip(long numBytes) throws IOException | numBytes로 지정된 바이트를 무시하고, 무시된 바이트 수를 반환                                    |
 <br/><br/>
 
 >**Reference**

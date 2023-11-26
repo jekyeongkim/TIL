@@ -239,6 +239,44 @@ InputStream, OutputStream
 | int read() throws IOException              | 입력 스트림에서 한 바이트를 읽어서 int 값으로 반환. 더 이상 읽어들일 내용이 없을 경우 -1을 반환                |
 | int read(byte buf[]) throws IOException    | 입력 스트림에서 buf[] 크기만큼을 읽어 buf에 저장하고 읽은 바이트 수를 반환. 더 이상 읽어들일 내용이 없을 경우 -1을 반환 |
 | int skip(long numBytes) throws IOException | numBytes로 지정된 바이트를 무시하고, 무시된 바이트 수를 반환                                    |
+
+
+### 예제
+
+```java
+/*
+1byte가 표현할 수 있는 값 : 00000000 ~ 11111111
+read() 메소드가 읽어들일 수 있는 정보 → 00000000 ~ 11111111 중에 한 개
+1byte씩 읽어들인다. 100byte 파일을 읽는다 하면 100번 읽어들이는 것
+만약 파일의 크기를 모른다면 ❓
+→ 더 이상 읽어들일 것이 없을 떄(EOF)까지 1byte씩 읽어들일 것
+❗️ 하지만 1byte가 표현할 수 있는 값으로는 EOF 값을 표현할 수 없다 
+→ int(4byte)에 1byte 값을 담자 00000000 00000000 00000000 00000000
+EOF : -1
+*/
+public class InputStream01 {
+    public static void main(String[] args) {
+        InputStream in = null;
+        
+        // in.read(); 이렇게만 적으면 IOException이 발생, 컴파일 오류가 발생 → Exception 처리 해줘야 함
+      
+        try {
+            int data = in.read();
+        }catch (IOException ex){
+            System.out.println("io 오류 : " + ex);
+        }finally {
+            try {
+                in.close();
+            }catch (Exception ex2){
+                System.out.println("io 오류2 : " + ex2);
+            }
+        }
+    }
+}
+```
+
+InputStream의 주요 메소드는 read()</br>
+
 <br/><br/>
 
 >**Reference**

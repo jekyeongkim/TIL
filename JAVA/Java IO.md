@@ -225,7 +225,7 @@ FileInfo 뒤에 . 이 붙은 것을 볼 수 있는데 여기서 . 은 현재 자
 
 ---
 
-InputStream, OutputStream
+### InputStream, OutputStream
 * 추상클래스
 * byte 단위 입출력 클래스는 InputStream, OutputStream의 후손이다.
 
@@ -261,7 +261,7 @@ public class InputStream01 {
         // in.read(); 이렇게만 적으면 IOException이 발생, 컴파일 오류가 발생 → Exception 처리 해줘야 함
       
         try {
-            int data = in.read();
+            int data = in.read(); // int로 리턴하는 이유 ❓
         }catch (IOException ex){
             System.out.println("io 오류 : " + ex);
         }finally {
@@ -275,9 +275,255 @@ public class InputStream01 {
 }
 ```
 
-InputStream의 주요 메소드는 read()</br>
+InputStream의 주요 메소드는 `read()`</br>
+`read()` 메소드는 추상메소드이기 때문에 자식에서 구현</br>
+byte 단위로 읽어들이는 `read()` 메소드가 int로 리턴하는 이유 ❓</br>
+→ ✅ EOF를 표현할 수 있는 방법이 없기 때문
 
+---
+
+### IO Stream
+
+byte 또는 char의 흐름
 <br/><br/>
 
+---
+
+
+### Reader, Writer
+* 추상클래스
+* char 단위 입출력 클래스는 Reader, Writer의 후손이다.
+
+---
+
+### Byte Input Stream Hierarchy
+
+![img_15.png](img_15.png)
+
+---
+
+### Byte Output Stream Hierarchy
+
+![img_16.png](img_16.png)
+
+---
+
+### Character Input Stream Hierarchy
+
+![img_17.png](img_17.png)
+ㄱ
+---
+
+### Character Output Stream Hierarchy
+
+![img_18.png](img_18.png)
+
+---
+
+### InputStream 정리
+
+![img_21.png](img_21.png)
+* InputStream 은 추상클래스이기 떄문에 new 연산자로 인스턴스를 생성할 수 없음!
+* 읽어들여야 할 대상이 있는데 이를 읽어들이기 위해서는 InputStream을 이용하며 InputStream은 `read()` 라는 메소드를 갖고 있음.
+* `read()` 라는 메소드는 byte 단위로 읽어들이는데 read() 메소드를 사용하게 되면 읽어들여야 할 대상으로부터 1byte씩 읽어들임.
+* 1byte로 읽어들이는데 정수(4byte)로 리턴을 해줌. 4byte 중 맨 뒤 1byte에 읽어듥임.
+
+
+---
+
+### OutputStream 정리
+![img_20.png](img_20.png)
+
+* InputStream 은 추상클래스이기 떄문에 new 연산자로 인스턴스를 생성할 수 없음!
+* OutputStream이 갖고 있는 `write()` 메소드에 정수값을 넣어주면 정수의 맨 끝에 1byte가 써야 할 대상에 저장이 됨.
+* `write()` 메소드를 10번 호출하면 써야 할 대상에 10byte가 차례대로 써짐.
+* byte 배열을 넣어주게 되면 배열 크기만큼 써야 할 대상에 저장이 됨.
+
+---
+
+### 예제 1 (OutputStream)
+
+```java
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
+public class HelloIO01 {
+  public static void main(String[] args) throws Exception {
+        OutputStream out = new FileOutputStream("/tmp/helloio01.dat");
+        out.write(1); // 0000 0000     0000 0000    0000 0000    0000 0001
+        out.write(255);
+        out.write(0);
+        out.close();
+    }
+}
+```
+실행해보면 3byte짜리 파일이 저장이 된다.
+
+---
+
+### 예제 2 (InputStream)
+
+```java
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+public class HelloIO02 {
+    public static void main(String[] args) throws Exception {
+        InputStream in = new FileInputStream("/tmp/helloio01.dat");
+        int i1 = in.read(); // 정수(4byte) 중에서 맨 끝에 1byte에만 값을 채워서 읽어오게 되어있음
+        System.out.println(i1); // 1
+        int i2 = in.read();
+        System.out.println(i2); // 255
+        int i3 = in.read();
+        System.out.println(i3); // 0
+        int i4 = in.read();
+        System.out.println(); // -1 (파일의 끝, 더 이상 읽어들일게 없으면 -1 리턴)
+        in.close();
+    }
+}
+```
+실행 결과
+```text
+1
+255
+0
+-1
+```
+위의 예제 개선 (파일을 끝을 만날 때까지 반복해서 출력하게 되면 위처럼 일일히 read() 메소드를 사용할 필요가 없음)
+```java
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+public class HelloIO02 {
+    public static void main(String[] args) throws Exception {
+        InputStream in = new FileInputStream("/tmp/helloio01.dat");
+        // 파일을 끝을 만날 때까지 반복해서 출력하게 되면 위처럼 일일히 read() 메소드를 사용할 필요가 없음
+      
+        int buf = -1;
+        // read() 메소드에서 읽어들인 값을 buf에 담고, buf값이 -1이 아닐때까지 반복하면서 읽어들여라
+        while ((buf = in.read()) != -1){
+            System.out.println(buf);
+        }
+        in.close();
+    }
+}
+```
+실행 결과
+```text
+1
+255
+0
+-1
+```
+
+---
+
+### Reader 정리
+![img_24.png](img_24.png)
+* Reader는 추상클래스이기 떄문에 new 연산자로 인스턴스를 생성할 수 없음!
+* Reader를 이용하게 되면 읽어들여야 할 대상으로부터 읽어들임. (생성자에 들어온 값)
+* Reader는 문자단위(char)로 읽어들임. 1개의 문자는 2byte를 차지함.
+* `read()` 메소드를 사용하게 되면 정수값 중 맨 끝에 2byte에 값을 채워서 읽어들이게 됨
+* 10byte 짜리 파일을 읽어들이려면 `read()` 메소드를 5번 호출해야 함.
+
+---
+
+### writer 정리
+![img_19.png](img_19.png)
+* Writer는 추상클래스이기 떄문에 new 연산자로 인스턴스를 생성할 수 없음!
+* writer를 이용하게 되면 써야 할 대상으로부터 써줌. (생성자에 들어온 값)
+* `write(int)` → write에 int 값을 넣어주게 되면 정수의 끝에 있는 2byte를 써야 할 대상에 써줌
+
+--- 
+
+### 예제 1 (Writer)
+```java
+import java.io.FileWriter;
+import java.io.Writer;
+
+public class HelloIO03 {
+    public static void main(String[] args) throws Exception {
+        Writer out = new FileWriter("/tmp/hello1.txt");
+        out.write((int)'a'); // 문자 a를 정수로 형 변환하여 저장
+        out.write((int)'h'); // 문자 h를 정수로 형 변환하여 저장
+        out.write((int)'!'); // 문자 !를 정수로 형 변환하여 저장
+        out.close();
+    }
+}
+```
+실행해보면 3byte짜리 파일이 저장이 된다.
+```java
+import java.io.FileWriter;
+import java.io.Writer;
+
+public class HelloIO03 {
+    public static void main(String[] args) throws Exception {
+        Writer out = new FileWriter("/tmp/hello2.txt");
+        out.write((int)'가'); // 문자 가를 정수로 형 변환하여 저장
+        out.write((int)'나'); // 문자 나를 정수로 형 변환하여 저장
+        out.write((int)'다'); // 문자 다를 정수로 형 변환하여 저장
+        out.close();
+    }
+}
+```
+실행해보면 9byte짜리 파일이 저장이 된다. (한글 유니코드 3바이트씩 저장)
+
+---
+
+### 예제 2 (Reader)
+```java
+import java.io.FileReader;
+import java .io.Reader;
+
+public class HelloIO04 {
+    public static void main(String[] args) {
+        Reader in = new FileReader("/tmp/hello2.txt");
+        int ch1 = in.read(); // 정수를 리턴
+        System.out.println((char)ch1); // 가 (정수로 형 변환하여 출력)
+        int ch2 = in.read(); // 정수를 리턴
+        System.out.println((char)ch2); // 나 (정수로 형 변환하여 출력)
+        int ch3 = in.read(); // 정수를 리턴
+        System.out.println((char)ch3); // 다 (정수로 형 변환하여 출력)
+        int ch4 = in.read();
+        System.out.println(ch4); // -1 (더 이상 읽어들일 것이 없음)
+        in.close();
+    }
+}
+```
+실행 결과
+```text
+가
+나
+다
+-1
+```
+
+위의 예제 개선 (파일을 끝을 만날 때까지 반복해서 출력하게 되면 위처럼 일일히 read() 메소드를 사용할 필요가 없음)
+```java
+import java.io.FileReader;
+import java .io.Reader;
+
+public class HelloIO04 {
+    public static void main(String[] args) {
+        Reader in = new FileReader("/tmp/hello2.txt");
+        
+        int ch = -1;
+        
+        // 읽어들인 것을 정수에 넣어준 뒤, -1이 아닐 떄까지 반복해라
+        while ((ch = in.read()) != -1) {
+            System.out.println((char)ch); // 정수로 읽어들였는데 실제론 문자이므로 문자로 형 변환하여 출력
+        }
+        
+        in.close();
+    }
+}
+```
+실행 결과
+```text
+가
+나
+다
+-1
+```
 >**Reference**
 ><br/>부부개발단 - 즐겁게 프로그래밍 배우기.

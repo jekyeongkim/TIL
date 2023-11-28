@@ -311,7 +311,7 @@ byte 또는 char의 흐름
 ### Character Input Stream Hierarchy
 
 ![img_17.png](img_17.png)
-ㄱ
+
 ---
 
 ### Character Output Stream Hierarchy
@@ -389,7 +389,8 @@ public class HelloIO02 {
 0
 -1
 ```
-위의 예제 개선 (파일을 끝을 만날 때까지 반복해서 출력하게 되면 위처럼 일일히 read() 메소드를 사용할 필요가 없음)
+### 예제 2 (InputStream 개선)
+파일을 끝을 만날 때까지 반복해서 출력하게 되면 위처럼 일일히 read() 메소드를 사용할 필요가 없음
 ```java
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -498,7 +499,8 @@ public class HelloIO04 {
 -1
 ```
 
-위의 예제 개선 (파일을 끝을 만날 때까지 반복해서 출력하게 되면 위처럼 일일히 read() 메소드를 사용할 필요가 없음)
+### 예제 2 (Reader 개선) 
+파일을 끝을 만날 때까지 반복해서 출력하게 되면 위처럼 일일히 read() 메소드를 사용할 필요가 없음
 ```java
 import java.io.FileReader;
 import java .io.Reader;
@@ -525,5 +527,126 @@ public class HelloIO04 {
 다
 -1
 ```
+
+---
+
+### 연결해서 다양하게 쓰이는 Java IO
+
+![img_22.png](img_22.png)
+
+* 읽어들여야 할 대상이 File이다 → `FileInputStream`의 `read()` 메소드를 사용하여 읽어들임.
+* `IO` 클래스 중 `InputStreamReader(InputStream)`는 `InputStream`을 통해 읽어들이겠다는 뜻 → `InputStreamReader`는 문자를 리턴해주는 `read()` 메소드를 갖고 있음
+  * 즉, `InputStreamReader`의 `read()` 메소드를 사용하게 되면 `InputStream`의 `read()` 메소드를 내부적으로 사용하게 됨
+  * `InputStreamReader`의 `read()` 메소드를 1번 호출하게 되면, 안에 들어온 `InputStream`의 `read()` 메소드를 2번 호출하게 됨 (문자(2byte)를 리턴하기 때문에)
+* `BufferedEReader(Reader)`는 내부적으로 buffer를 갖고 있음. `readLine()` 한 줄을 읽어오는 메소드를 갖고 있음. 생성자에 Reader를 받아들임.
+  * `readLine()` 메소드를 호출하게 되면 내부적으로 생성자 안에 들어온 `Reader`의 `read()` 메소드를 호출하게 됨 (한 줄이 채워질 때까지 호출하고 채워지면 문자열로 리턴)
+
+✅ `BufferedReader(Reader)`의 `readLine()` 메소드를 호출하게 되면 ❓</br>
+→ `Reader`, `InputStreamReader`, `InputStream`, `FileInputStream`의 메소드를 연결해서 계속 호출한다 ❗️❗️
+
+### 예제 1 (PrintWriter)
+```java
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+
+public class HelloIO05 {
+    public static void main(String[] args) {
+        // FileOutputStream은 "/tmp/my.txt"에 저장한다.
+        // FileOutputStream은 write(int); 메소드를 갖음 → int의 마지막 byte만 저장
+        // OutputStreamWriter 생성자에 들어온 OutputStream의 write() 메소드를 이용하여 쓴다.
+        // OutputStreamWriter는 write(int); 메소드를 갖음 → int의 끝 부분 char를 저장 
+        // PrintWriter는 생성자에 들어온 OutputStreamWriter의 write() 메소드를 이요하여 쓴다.
+        // PrintWriter는 println(문자열); → 문자열을 출력한다.
+        PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream("/tmp/my.txt"));
+        
+        out.println("hello");
+        out.println("world");
+        out.println("!!!!");
+        out.close();
+    }
+}
+```
+실행 결과 17byte의 다음과 같은 파일이 저장됨
+```text
+hello
+world
+!!!!
+```
+
+### 예제 2 (BufferedReader)
+```java
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+public class HelloIO06 {
+    public static void main(String[] args) {
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/tmp/my.txt")));
+        
+        String line1 = in.readLine(); // hello
+        String line2 = in.readLine(); // world
+        String line3 = in.readLine(); // !!!!
+        String line4 = in.readLine(); // null (더 이상 읽어들일게 없음)
+
+        System.out.println(line1);
+        System.out.println(line2);
+        System.out.println(line3);
+        System.out.println(line4);
+        
+        in.close();
+    }
+}
+```
+실행 결과
+```text
+hello
+world
+!!!!
+null 
+```
+
+### 예제 2 (BufferedReader 개선)
+10000줄이 있다면 readLine() 메소드를 10000번이나 호출해야 하는 번거로움이 있음 
+```java
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+public class HelloIO06 {
+    public static void main(String[] args) {
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("/tmp/my.txt")));
+        
+        String line = null;
+        
+        // 한 줄 읽어들인 것을 line에 넣어줌. 이 과정을 null이 아닐 때까지 반복
+        while ((line = in.readLine()) != null){
+            System.out.println(line);
+        }
+        in.close();
+    }
+}
+```
+실행 결과
+```text
+hello
+world
+!!!!
+```
+
+---
+
+### composite 패턴
+
+![img_23.png](img_23.png)
+
+* 위의 그림에서는 interface로 예시가 나와있는데 추상클래스도 가능하다.
+* Folder와 File은 모두 FileComponent를 상속받고 있음 
+* Folder는 FileComponent를 가질 수 있다는 뜻 
+  * = FileComponent를 상속받거나 구현하고 있는 Folder나 File들을 가질 수 있다는 뜻
+
+Java IO는 Decorator 패턴으로 되어있다.
+
+composite 패턴은?
 >**Reference**
 ><br/>부부개발단 - 즐겁게 프로그래밍 배우기.

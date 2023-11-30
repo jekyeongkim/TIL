@@ -636,7 +636,7 @@ world
 
 ---
 
-### composite 패턴
+### Composite 패턴
 
 ![img_23.png](img_23.png)
 
@@ -647,6 +647,124 @@ world
 
 Java IO는 Decorator 패턴으로 되어있다.
 
-composite 패턴은?
+Composite 패턴은?
+
+### Composite 패턴 예시
+1. Node 클래스
+```java
+public abstract class Node {
+    // 필드
+    private String name;
+    
+    // 생성자
+    public Node(String name) {
+      this.name = name;
+    }
+    
+    // getter
+    public String getName() {
+      return name;
+    }
+    
+    // setter
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    // 추상 메소드
+    public abstract long getSize();
+    
+    public abstract boolean isFolder();
+}
+```
+2. File 클래스
+```java
+public class File extends Node {
+    private long size;
+    
+    // super(Node)에 name을 전달해서 초기화, 자신의 필드 size를 파라미터로 들어온 size로 바꿔주는 생성 
+    public File(String name, long size){
+        super(name);
+        this.size = size;
+    }
+    
+    // 추상 메소드 오버라이드, 자신의 size값을 리턴
+    @Override
+    public long getSize() {
+        return this.size;
+    }
+    
+    // 추상 메소드 오버라이드, File은 폴더가 아니기 때문에 false를 리턴하는 메소드
+    @Override
+    public boolean isFolder() {
+        return false;
+    }
+}
+```
+3. Folder 클래스
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class Folder extends Node {
+    // Folder는 Node를 여려 개 가진다는 의미의 필드 선언
+    private List<Node> nodes;
+    
+    // super(Node)에 name을 전달해서 초기화, nodes는 현재 참조하는 것이 없는 null이므로 new ArrayList()로 초기화
+    public Folder(String name) {
+        super(name);
+        nodes = new ArrayList<>();
+    }
+    
+    // 메소드 오버로딩
+    // File을 받아들여 nodes에 add (Node의 자식들을 모두 가질 수 있음)
+    public void add(File file) {
+        nodes.add(file);
+    }
+
+    // Folder를 받아들여 nodes에 add (Node의 자식들을 모두 가질 수 있음)
+    public void add(Folder folder) {
+        nodes.add(folder);
+    }
+    
+    // nodes의 size만큼 반복하여 size를 구하는 메소드
+    @Override
+    public long getSize() {
+        long total = 0L;
+        for (int i = 0; i < nodes.size(); i++){
+            total = total + nodes.get(i).getSize();
+        }
+        return total;
+    }
+}
+```
+4. CompositePatternDemo 클래스
+```java
+public class CompositePatternDemo {
+    File f1 = new File("file1, 10L");
+    File f2 = new File("file2, 20L");
+    File f3 = new File("file3, 30L");
+    
+    Folder folder1 = new Folder("folder1");
+    Folder folder2 = new Folder("folder2");
+    
+    // Folder는 File도 가질 수 있고 Folder도 가질 수 있음
+    folder1.add(f1);
+    folder2.add(folder2); // f2, f3값이 들어있음
+    
+    // File만 추가
+    folder2.add(f2);
+    folder2.add(f3);
+    
+    System.out.println(folder1.getSize());
+}
+```
+출력 결과
+```text
+60
+```
+
+***Folder와 File을 Node라는 부모클래스(공통적인 것)를 둠으로써 일체화시키는 패턴이 composite 패턴이다!!!***
+
 >**Reference**
 ><br/>부부개발단 - 즐겁게 프로그래밍 배우기.

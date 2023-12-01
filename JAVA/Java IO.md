@@ -105,7 +105,7 @@ public class KeyboardIOExam {
         // 한 줄 쓰기 : PrintStream, PrintWriter
 
 
-        // BufferedReader는 장식이기 때문에 생성자로 Reader를 받아들여야 함 → Reader는 추상클래스라 그냥 받지 못하고 자손클래스를 받아야 함❗️
+        // BufferedReader는 장식 역할을 수행하기 때문에 생성자로 Reader를 받아들여야 함 → Reader는 추상클래스라 그냥 받지 못하고 자손클래스를 받아야 함❗️
         
         // BufferedReader 생성자로 올 수 있는 목록 (
         // BufferedReader → 🚫
@@ -766,5 +766,703 @@ public class CompositePatternDemo {
 
 ***Folder와 File을 Node라는 부모클래스(공통적인 것)를 둠으로써 일체화시키는 패턴이 composite 패턴이다!!!***
 
+
+---
+
+### Decorator 패턴
+![img_6.png](img_6.png)
+* Composite 패턴과 거의 비슷함
+* Component와 Component를 상속받고 있는 ConcreteComponent 객체, Decorator 객체가 있음. (보통 대부분 추상 클래스)
+* 그리고 Decorator를 상속받고 있는 또 다른 객체가 있을 수 있음.
+* Decorator는 Component를 가질 수 있으며, 이는 Component를 상속받고 모든 있는 것들을 가질 수 있다는 의미
+
+### Decorator 패턴 예시
+![img_25.png](img_25.png)
+* Shape와 Shape를 상속받고 있는 Circle, Rectangle 클래스가 있음.
+* Circle, Rectangle을 장식할 수 있는 ShapeDecorator, RedShapeDecorator 클래스가 있음.
+* ShapeDecorator는 장식할 대상을 갖고 있어야하기 때문에 Shape 클래스를 가지는 관계로 표현되어 있음.
+
+
+1. Shape 클래스 
+```java
+public abstract class Shape {
+    // 추상 메소드
+    public abstract void draw();
+}
+```
+2. Circle 클래스
+```java
+public class Circle extends Shape {
+    // 메소드 오버라이딩
+    @Override
+    public void draw() {
+        System.out.println("shape : Circle");
+    }
+}
+```
+3. Rectangle 클래스
+```java
+public class Rectangle extends Shape {
+    // 메소드 오버라이딩
+    @Override
+    public void draw() {
+        System.out.println("shape : Rectangle");
+    }
+}
+```
+4. ShapeDecorator 클래스
+```java
+public abstract class ShapeDecorator extends Shape {
+    // Shape 타입의 필드 선언 (Shape를 상속받고 있는 모든 것들을 가질 수 있음)
+    protected Shape decoratedShape;
+    
+    // 생성자에서 내가 장식할 대상(Shape)을 받아들여서 필드로 초기화
+    public ShapeDecorator(Shape decoratedShape) {
+        this.decoratedShape = decoratedShape;
+    }
+    
+    // 내가 장식할 대상(Shape) decoratedShape가 갖고 있는 draw() 메소드 호출
+    public void draw() {
+        decoratedShape.draw();
+    }
+}
+```
+5. RedShapeDecorator 클래스
+```java
+public class RedShapeDecorator extends ShapeDecorator {
+    // 생성자에서 내가 장식할 대상(Shape)을 받아들여서 super(ShapeDecorator)에 넘겨줌
+    public RedShapeDecorator(Shape decoratedShape) {
+        super(decoratedShape);
+    }
+    
+    // RedShapeDecorator가 호출되면 draw() 메소드 호출
+    @Override
+    public void draw() {
+        setRedBorder(decoratedShape);
+    }
+    
+    private void setRedBorder(Shape decoratedShape){
+        System.out.println("Red ================== Start");
+        decoratedShape.draw();
+        System.out.println("Red ================== End");
+    }
+}
+```
+6. GreenShapeDecorator 클래스
+```java
+public class GreenShapeDecorator extends ShapeDecorator {
+    // 생성자에서 내가 장식할 대상(Shape)을 받아들여서 super(ShapeDecorator)에 넘겨줌
+    public GreenShapeDecorator(Shape decoratedShape) {
+        super(decoratedShape);
+    }
+    
+    // GreenShapeDecorator가 호출되면 draw() 메소드 호출
+    @Override
+    public void draw() {
+        setRedBorder(decoratedShape);
+    }
+    
+    private void setRedBorder(Shape decoratedShape){
+        System.out.println("Green ================== Start");
+        decoratedShape.draw();
+        System.out.println("Green ================== End");
+    }
+}
+```
+7. DecoratorPatternDemo1 클래스
+```java
+public class DecoratorPatternDemo1 {
+    public static void main(String[] args) {
+        Circle circle = new Circle();
+        
+        circle.draw();
+    }
+}
+```
+```text
+shape : Circle
+```
+8. DecoratorPatternDemo2 클래스 (circle을 빨갛게 칠하고 싶을 떼)
+```java
+public class DecoratorPatternDemo2 {
+    public static void main(String[] args) {
+        Circle circle = new Circle();
+        
+        RedShapeDecorator redShapeDecorator = new RedShapeDecorator(circle);
+        redShapeDecorator.draw();
+        
+    }
+}
+```
+```text
+Red ================== Start
+shape : Circle
+Red ================== End
+```
+9. DecoratorPatternDemo3 클래스 (빨갛게 칠해진 circle을 초록색으로 칠하고 싶을 때)
+```java
+public class DecoratorPatternDemo3 {
+    public static void main(String[] args) {
+        Circle circle = new Circle();
+        
+        RedShapeDecorator redShapeDecorator = new RedShapeDecorator(circle);
+
+        GreenShapeDecorator greenShapeDecorator = new GreenShapeDecorator(redShapeDecorator);
+        greenShapeDecorator.draw();
+        
+    }
+}
+```
+```text
+Green ================== Start
+Red ================== Start
+shape : Circle
+Red ================== End
+Green ================== End
+```
+10. DecoratorPatternDemo4 클래스 (빨갛게 칠해진 rectangle을 초록색으로 칠하고 싶을 때)
+```java
+public class DecoratorPatternDemo3 {
+    public static void main(String[] args) {
+        
+        Shape shape = new GreenShapeDecorator(new RedShapeDecorator(new Rectangle()));
+        shape.draw();
+        
+        // Shape ==> InputStream (추상클래스)
+        // Rectangle
+//        InputStream in = new DataInputStream(new FileInputStream("a.txt"));
+    }
+}
+```
+```text
+Green ================== Start
+Red ================== Start
+shape : Rectangle
+Red ================== End
+Green ================== End
+```
+
+Java IO도 위와 똑같음
+```java
+public class JavaIODemo {
+    public static void main(String[] args) throws Exception{
+        
+//        Shape shape = new GreenShapeDecorator(new RedShapeDecorator(new Rectangle()));
+//        shape.draw();
+        
+        // Shape ==> InputStream (추상클래스)
+        // Rectangle ==> FileInputStream
+        // RedShapeDecorator ==> DataInputStream
+        InputStream in = new DataInputStream(new FileInputStream("a.txt"));
+    }
+}
+```
+
+***InputStream (추상클래스)이 Shape 역힐을 수행하고</br>
+FileInputStream이 Rectangle의 역할</br>
+DataInputStream이 RedShapeDecorator 역할을 수행하는 것과 같음!!!***
+
+### 결론
+**✅ Java IO를 잘 알기 위해서는 주인공과 장식을 구분할 수 있어야 한다! → Java IO는 Decorator 패턴으로 이루어져 있기 때문❗️**
+
+---
+
+### DataInputStream, DataOutputStream
+* 기본형 타입과 문자열을 읽고 쓸 수 있다.
+* DataOutputStream는 다양한 타입을 저장할 때 사용
+
+### 예제 1 (DataOutputStream)
+```java
+public class IOExam11 {
+    public static void main(String[] args) {
+        // 문제 : 이름, 국어, 영어, 수학, 총점, 평균 점수를 /tmp/score.dat 파일에 저장하시오.
+        String name = "kim";
+        int kor = 90;
+        int eng = 50;
+        int math = 70;
+        double total = kor + eng + math;
+        double avg = total / 3.0;
+        
+        // 다양한 타입을 저장할 때 사용하는 객체가 DataOutputStream
+        // DataOutputStream은 파라미터로 OutputStream을 받아들임 → 장식 역할
+        DataOutputStream out = new DataOutputStream(new FileOutputStream("/tmp/score.dat"));
+        // writeUTF()는 이름을 저장하는 메소드
+        out.writeUTF(name);
+        // writeInt()은 정수값을 저장하는 메소드
+        out.writeInt(kor);
+        out.writeInt(eng);
+        out.writeInt(math);
+        // writeInt()은 실수값을 저장하는 메소드
+        out.writeDouble(total);
+        out.writeDouble(avg);
+        
+        out.close();
+    }
+}
+```
+```text
+ls -la /tmp/score,dat
+```
+터미널에서 다음 명령을 실행해보면 파일이 하나 만들어진 것을 볼 수 있다.
+
+### 예제 2 (DataInputStream)
+```java
+public class IOExam12 {
+    public static void main(String[] args) {
+        // 문제 : 이름, 국어, 영어, 수학, 총점, 평균 점수를 /tmp/score.dat 파일에서 읽어들이시오.
+      
+        DataInputStream in = new DataInputStream(new FileInputStream("/tmp/score.dat"));
+        // 쓴 순서와 똑같이 읽어들여야 함❗️
+        String name = in.readUTF();
+        int kor = in.readInt();
+        int eng = in.readInt();
+        int math = in.readInt();
+        
+        double total = in.readDouble();
+        double avg = in.readDouble();
+        in.close();
+
+        System.out.println(name);
+        System.out.println(kor);
+        System.out.println(eng);
+        System.out.println(math);
+        System.out.println(total);
+        System.out.println(avg);
+    }
+}
+```
+실행 결과
+```text
+kim
+90
+50
+70
+210.0
+70.0
+```
+
+---
+
+### ByteInputStream, ByteOutputStream
+* byte[]에 데이터를 읽고 쓰기
+
+### 예제 1 (ByteArrayOutputStream)
+```java
+public class IOExam13 {
+    public static void main(String[] args) throws Exception {
+        int data1 = 1;
+        int data2 = 2;
+        // ByteArrayOutputStream은 내부적으로 메모리를 갖고 있다.
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(data1); // data1의 마지막 1byte만 저장한다.
+        out.write(data2); // data2의 마지막 1byte만 저장한다.
+        out.close();
+        
+        // toByteArray() 메소드는 out에 저장한 Byte 배열 값을 읽어온다.
+        byte[] array = out.toByteArray();
+        System.out.println(array.length);
+        System.out.println(array[0]);
+        System.out.println(array[1]);
+    }
+}
+```
+```text
+2
+1
+2
+```
+
+### 예제 2 (ByteArrayInputStream)
+```java
+public class IOExam14 {
+    public static void main(String[] args) throws Exception {
+        // ByteArrayInputStream는 byte 배열로부터 읽어들이는 것이기 때문에 byte 배열 선언해줘야 함.
+        byte[] array = new byte[2];
+        // 정수 1을 byte로 변환하여 배열에 넣음
+        array[0] = (byte) 1; 
+        array[1] = (byte) 2; 
+        ByteArrayInputStream in = new ByteArrayInputStream(array);\
+        int read1 = in.read(); // 1 (1byte 값을 읽어들여서 리턴)
+        int read2 = in.read(); // 2 (1byte 값을 읽어들여서 리턴)
+        int read3 = in.read(); // -1 (더 이상 읽어들일게 없으므로)
+
+        System.out.println(read1);
+        System.out.println(read2);
+        System.out.println(read3);
+    }
+}
+```
+```text
+1
+2
+-1
+```
+
+---
+
+### CharArrayReader, CharArrayWriter
+* char[]에 데이터를 읽고 쓰기
+
+---
+
+### StringReader, StringWriter
+* 문자열 읽고 쓰기
+
+### 예제 1 (StringWriter)
+```java
+public class IOExam15 {
+    public static void main(String[] args) {
+        // StringWriter는 생성자에 아무것도 받아들이지 않음 → 메모리에 쓴다고 생각하면 됨
+        StringWriter out = new StringWriter();
+        out.write("hello");
+        out.write("world");
+        out.write("!!!");
+        out.close();
+        
+        String str = out.toSting();
+        System.out.println(str);
+    }
+}
+```
+```text
+helloworld!!!
+```
+전체가 합쳐진 문자열로 출력이 되는 것을 볼 수 있음!
+
+### 예제 2 (StringReader)
+
+```java
+public class IOExam16 {
+    public static void main(String[] args) {
+        // StringReader는 파라미터로 문자열이 들어옴
+        StringReader in = new StringReader("helloworld!!!");
+        int ch = -1;
+        
+        // 문자 하나를 읽어들여 ch에 저장한 뒤, 더 이상 읽어들일 것이 없을 때까지(-1이 아닐 때까지) 반복
+        while ((ch = in.read()) != -1) {
+            System.out.print((char)ch); // ch는 정수값이기 때문에 형 변환
+        }
+        
+        in.close();
+    }
+}
+```
+```text
+helloworld!!!
+```
+
+---
+
+### ObjectInputStream, ObjectOutputStream
+* 직렬화 가능한 대상을 읽고 쓸 수 있다.
+* 직렬화 가능한 대상은 기본형 타입 또는 java.io.Serializable 인터페이스를 구현하고 있는 객체이다.
+* java.io.Serializable는 메소드를 갖고 있지 않기 때문에 인터페이스만 구현해주면 됨 (메소드 구현 필요 x)
+* 메소드를 갖고 있지 않는 인터페이스를 마커 인터페이스(marker interface)라고 함
+
+### 예제 1 (ObjectOutputStream)
+1. User 클래스
+```java
+public class User implements Serializable {
+    // String과 int 를 들어가보면 Serializable을 구현하고 있는걸 알 수 있다. → 직렬화가 가능하다❗️
+    private String email;
+    private String name;
+    private int birthYear;
+    
+    // 생성자
+    public User(String email, String name, int birthYear) {
+      this.email = email;
+      this.name = name;
+      this.birthYear = birthYear;
+    }
+    
+    // getter
+    public String getEmail() {
+      return email;
+    }
+  
+    public String getName() {
+      return name;
+    }
+  
+    public int getBirthYear() {
+      return birthYear;
+    }
+    
+    // toString 메소드
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", birthYear=" + birthYear +
+                '}';
+                
+    }
+}
+```
+2. ObjectOutputExam 클래스
+```java
+public class ObjectOutputExam {
+    public static void main(String[] args) throws Exception {
+        User user =  new User("hong@example.com", 홍길동, 1992);
+        
+        // /tmp/user.dat에 저장
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("/tmp/user.dat"));
+        
+        // user를 객체직렬화 시켜 파일에 저장
+        out.writeObject(user);
+        out.close();
+    }
+}
+```
+```text
+ls -la /tmp/user.dat
+```
+터미널에서 다음 명령을 실행시켜보면 파일 하나가 생성된 것을 볼 수 있음. 
+
+### 예제 2 (ObjectInputStream)
+1. ObjectInputExam 클래스
+```java
+public class ObjectInputExam {
+    public static void main(String[] args) throws Exception {
+        // FileInputStream을 통해서 ObjectInputStream을 읽어들임
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream("/tmp/user.dat"));
+        
+        // readObject() 메소드는 오브젝트 타입을 읽어들여 리턴함 → User 타입으로 저장했기 떄문에 User 타입으로 형 변환 필요
+        User user = (User) in.readObject();
+        in.close();
+        System.out.println(user);
+    }
+}
+```
+2. 출력 결과
+```text
+User{email='hong@example.com', name='홍길동', birthYear=1992}
+```
+`readObject()` 메소드가 파일로부터 인스턴스 정보를 읽어들여서 인스턴스를 만들어내고, 그것을 user에 담아 출력을 해줌 → **직렬화**
+
+### 예제 3 (ObjectOutputStream)
+1. ObjectOutputExam2 클래스 (여러 명의 유저를 저장)
+```java
+public class ObjectOutputExam2 {
+    public static void main(String[] args) throws Exception {
+        User user1 =  new User("hong@example.com", 홍길동, 1992);
+        User user2 =  new User("go@example.com", 고길동, 1995);
+        User user3 =  new User("d@example.com", 둘리, 1991);
+        
+        // ArrayList도 들어가보면 Serializable을 구현하고 있음 → 직렬화 가능❗️
+        ArrayList<User> list = new ArrayList<>();
+        list.add(user1);
+        list.add(user2);
+        list.add(user3);
+        
+        // /tmp/userlist.dat에 저장
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("/tmp/userlist.dat"));
+        
+        // list를 객체직렬화 시켜 파일에 저장 (list 안에 있는 user들까지 함께 저장이 됨)
+        out.writeObject(list);
+        out.close();
+    }
+}
+```
+```text
+ls -la /tmp/userlist.dat
+```
+터미널에서 다음 명령을 실행시켜보면 파일 하나가 생성된 것을 볼 수 있음.
+
+### 예제 4 (ObjectInputStream)
+1. ObjectInputExam2 클래스
+```java
+public class ObjectInputExam2 {
+    public static void main(String[] args) throws Exception {
+        // FileInputStream을 통해서 ObjectInputStream을 읽어들임
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream("/tmp/userlist.dat"));
+        
+        // readObject() 메소드는 오브젝트 타입을 읽어들여 리턴함 → Arraylist 타입으로 저장했기 떄문에 Arraylist 타입으로 형 변환 필요
+        Arraylist<User> list = (Arraylist) in.readObject();
+        in.close();
+        
+        // list에 들어가 있는 데이터 길이만큼 반복하면서 list에 있는 원소들을 출력
+        for (int i = 0; i < list.size(); i++) {
+          System.out.println(list.get(i));
+        }
+      
+    }
+}
+```
+2. 출력 결과
+```text
+User{email='hong@example.com', name='홍길동', birthYear=1992}
+User{email='go@example.com', name='고길동', birthYear=1995}
+User{email='d@example.com', name='둘리', birthYear=1991}
+```
+파일로부터 직렬화 되어있는 list 정보를 역직렬화하여 읽어들인 뒤, list의 size만큼 반복하여 출력해주고 있음!! → **직렬화**
+
+### 예제 5
+1. InputOutputExam 클래스 (ver1)
+```java
+public class InputOutputExam {
+    public static void main(String[] args) {
+        User user1 =  new User("hong@example.com", 홍길동, 1992);
+        User user2 =  new User("go@example.com", 고길동, 1995);
+        User user3 =  new User("d@example.com", 둘리, 1991);
+  
+        // ArrayList도 들어가보면 Serializable을 구현하고 있음 → 직렬화 가능❗️
+        ArrayList<User> list = new ArrayList<>();
+        list.add(user1);
+        list.add(user2);
+        list.add(user3);
+        
+        // 위에서 만든 ArrayList 인스턴스를 참조하고 있는 list를 list2도 참조하라는 뜻 (= 같은 ArrayList를 참조하라는 뜻)
+        ArrayList<User> list2 = list;
+        
+        for (int i = 0; i < list2.size(); i++) {
+            System.out.println(list2.get(i));
+        }
+    }
+}
+```
+2. 출력 결과
+```text
+User{email='hong@example.com', name='홍길동', birthYear=1992}
+User{email='go@example.com', name='고길동', birthYear=1995}
+User{email='d@example.com', name='둘리', birthYear=1991}
+```
+위에서 만든 ArrayList 인스턴스를 참조하고 있는 list를 list2도 참조하라는 뜻  (= 같은 ArrayList를 참조하라는 뜻)</br>
+ArrayList 전체를 복사하라는 뜻이 아님 🚫
+
+✅ 이 말은 list가 참조하고 있는 것 중에 하나(user3)를 지워버린다면 list2도 지워질 것임❗️
+1. ObjectInputExam2 클래스 (ver2)
+```java
+public class InputOutputExam {
+    public static void main(String[] args) {
+        User user1 =  new User("hong@example.com", 홍길동, 1992);
+        User user2 =  new User("go@example.com", 고길동, 1995);
+        User user3 =  new User("d@example.com", 둘리, 1991);
+  
+        // ArrayList도 들어가보면 Serializable을 구현하고 있음 → 직렬화 가능❗️
+        ArrayList<User> list = new ArrayList<>();
+        list.add(user1);
+        list.add(user2);
+        list.add(user3);
+        
+        // 위에서 만든 ArrayList 인스턴스를 참조하고 있는 list를 list2도 참조하라는 뜻 (= 같은 ArrayList를 참조하라는 뜻)
+        ArrayList<User> list2 = list;
+        
+        for (int i = 0; i < list2.size(); i++) {
+            System.out.println(list2.get(i));
+        }
+        
+        // 2번째 index 값을 지움
+        list.remove(2);
+        System.out.println(list.size());
+        System.out.println(list2.size());
+    }
+}
+```
+2. 출력 결과
+```text
+User{email='hong@example.com', name='홍길동', birthYear=1992}
+User{email='go@example.com', name='고길동', birthYear=1995}
+User{email='d@example.com', name='둘리', birthYear=1991}
+2
+2
+```
+![img_26.png](img_26.png)
+같은 ArrayList를 참조하고 있기 때문에 size값이 동일한 것을 알 수 있음!
+
+1. ObjectInputExam2 클래스 (ver3)
+```java
+public class InputOutputExam {
+    public static void main(String[] args) {
+        User user1 =  new User("hong@example.com", 홍길동, 1992);
+        User user2 =  new User("go@example.com", 고길동, 1995);
+        User user3 =  new User("d@example.com", 둘리, 1991);
+  
+        // ArrayList도 들어가보면 Serializable을 구현하고 있음 → 직렬화 가능❗️
+        ArrayList<User> list = new ArrayList<>();
+        list.add(user1);
+        list.add(user2);
+        list.add(user3);
+        
+        // ArrayList 객체를 하나 더 생성 
+        ArrayList<User> list2 = new ArrayList<>();
+        
+        // list의 size만큼 반복하여 list2에 list의 i번째 것을 꺼내서 담음
+        for (int i = 0; i < list2.size(); i++) {
+            list2.add(list.get(i));
+        }
+        
+        // 2번째 index 값을 지움
+        list.remove(2);
+        System.out.println(list.size());
+        System.out.println(list2.size());
+    }
+}
+```
+
+![img_27.png](img_27.png)
+
+ArrayList 자체는 별도로 따로 생겼지만 같은 User를 참조하고 있기 때문에 User의 정보를 변경하게 되면 list와 list2의 정보가 바뀌게 된다.
+
+→ ***즉, ArrayList만 새로 더 만들었을 뿐이지 User 자체는 복사가 되지 않는다.*** 이것을 알고리즘에선 **얕은 복사(Shallow Copy)** 라고 함 ❗️
+
+### 얕은 복사 (Shallow Copy)
+* 얕은 복사란 객체를 복사할 때 기존 값과 복사된 값이 같은 참조를 가리키고 있는 것을 말한다. 
+* 객체 안에 객체가 있을 경우 한 개의 객체라도 기존 변수의 객체를 참조하고 있다면 이를 얕은 복사라고 한다.
+
+✅ User 자체를 복사하고 싶을 때는 객체직렬화가 필요하다
+1. ObjectInputExam2 클래스 (ver4)
+```java
+public class InputOutputExam {
+    public static void main(String[] args) {
+        User user1 =  new User("hong@example.com", 홍길동, 1992);
+        User user2 =  new User("go@example.com", 고길동, 1995);
+        User user3 =  new User("d@example.com", 둘리, 1991);
+  
+        // ArrayList도 들어가보면 Serializable을 구현하고 있음 → 직렬화 가능❗️
+        ArrayList<User> list = new ArrayList<>();
+        list.add(user1);
+        list.add(user2);
+        list.add(user3);
+        
+        // ObjectOutputStream을 쓴 것이 byte 배열에 저장
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(bout);
+        
+        // list와 함께 list에 포함된 User까지 직렬화
+        out.WriteObject(list);
+        
+        // 선언한 것의 반대로 close
+        out.close();
+        bout.close();
+        
+        // list 자체가 직렬화가 되여 byte 배열이 됨
+        byte[] array = bout.toByteArray();
+        
+        // 직렬화 된 것을 ObjectInputStream을 통해 읽어들임
+        ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(array));
+        
+        // ArrayList로 형 변환하여 읽어들임
+        ArrayList<User> list2 = (ArrayList) in.readObject();
+        in.close();
+        
+        // list에서 2번째 index값을 지움
+        list.remove(2);
+
+      // list2의 size만큼 반복하여 list2의 i번째를 담아서 출력
+        for (int i = 0; i < list2.size(); i++) {
+            System.out.println(list2.get(i));
+        }
+    }
+}
+```
+2. 출력 결과
+```text
+User{email='hong@example.com', name='홍길동', birthYear=1992}
+User{email='go@example.com', name='고길동', birthYear=1995}
+User{email='d@example.com', name='둘리', birthYear=1991}
+```
+
 >**Reference**
-><br/>부부개발단 - 즐겁게 프로그래밍 배우기.
+><br/>부부개다 - 즐겁게 프로그래밍 배우기.

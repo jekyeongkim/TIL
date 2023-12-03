@@ -1411,7 +1411,10 @@ ArrayList 자체는 별도로 따로 생겼지만 같은 User를 참조하고 �
 * 얕은 복사란 객체를 복사할 때 기존 값과 복사된 값이 같은 참조를 가리키고 있는 것을 말한다. 
 * 객체 안에 객체가 있을 경우 한 개의 객체라도 기존 변수의 객체를 참조하고 있다면 이를 얕은 복사라고 한다.
 
-✅ User 자체를 복사하고 싶을 때는 객체직렬화가 필요하다
+✅ User 자체를 복사하고 싶을 때는 객체 직렬화가 필요하다
+
+### 직렬화(serialization)와 역직렬화(deserialization)를 수행하는 예제
+
 1. ObjectInputExam2 클래스 (ver4)
 ```java
 public class InputOutputExam {
@@ -1431,7 +1434,7 @@ public class InputOutputExam {
         ObjectOutputStream out = new ObjectOutputStream(bout);
         
         // list와 함께 list에 포함된 User까지 직렬화
-        out.WriteObject(list);
+        out.writeObject(list);
         
         // 선언한 것의 반대로 close
         out.close();
@@ -1450,7 +1453,7 @@ public class InputOutputExam {
         // list에서 2번째 index값을 지움
         list.remove(2);
 
-      // list2의 size만큼 반복하여 list2의 i번째를 담아서 출력
+        // list2의 size만큼 반복하여 list2의 i번째를 담아서 출력
         for (int i = 0; i < list2.size(); i++) {
             System.out.println(list2.get(i));
         }
@@ -1463,6 +1466,15 @@ User{email='hong@example.com', name='홍길동', birthYear=1992}
 User{email='go@example.com', name='고길동', birthYear=1995}
 User{email='d@example.com', name='둘리', birthYear=1991}
 ```
+***직렬화는 객체를 바이트 스트림으로 변환하는 과정이며, 역직렬화는 바이트 스트림을 다시 객체로 변환하는 과정***
+* List 인스턴스 0,1,2번째에 각각 User 인스턴스를 담고 이를 list 변수가 참조하게 함.
+* `writeObject()` 메소드를 통해 직렬화 (ObjectOutputStream을 사용하여 list 객체를 직렬화하고, 결과를 바이트 배열로 저장)
+* list가 참조하고 있는 모든 것이 메모리 상 바이트 배열로 바뀜
+* ObjectInputStream을 사용하여 바이트 배열을 읽어와 역직렬화를 수행하고, 결과를 ArrayList<User>로 변환
 
+***즉, User 인스턴스들이 그대로 바이트 배열이 됐다가 읽어들이면서 메모리 상에 그대로 복사된 것이 만들어지는 것!***
+
+***직렬화가 가능하다는 것은 ❓</br>
+→ ✅ Serializable 인터페이스를 구현하고 있거나, 기본형 타입을 사용한 것이 직렬화 가능한 데이터 타입이다!***
 >**Reference**
 ><br/>부부개다 - 즐겁게 프로그래밍 배우기.

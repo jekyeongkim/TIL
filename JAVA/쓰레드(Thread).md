@@ -179,7 +179,231 @@ class Xxx extends Thread {
 Xxx x = new Xxx();
 x.start();
 ```
+`run()` 메소드를 오버라이딩 했지만, 실제 호출하는 메소드는 `start()` 메소드임!
 
+### 예제 1
+1. MyThreadExam 클래스
+```java
+public class MyThreadExam {
+    public static void main(String[] args) {
+        // 메인 메소드가 실행되면 무조건 메인 스레드가 하나 만들어짐!
+        // currnetThread() 메소드는 현재 스레드 정보를 반환
+        String name = Thread.currentThread().getName();
+        System.out.println("thread name : " + name);
+        System.out.println("start!");
+        // 1초마다 * 를 10번 출력하는 프로그램을 작성하시오.
+        for (int i = 0; i < 10; i++) {
+            System.out.println("*");
+            try {
+                Thread.sleep(1000); // 1초간 쉰다 (1000 millis), 반드시 Exception 처리를 해줘야 함
+            }catch (InterruptedException e){
+                e.printStackTrace(); // Exception이 발생했을 떄, Exception 메세지만 출력하도록 하는 메소드
+            }
+        } // for 반복문 끝
+
+        // 1초마다 + 를 10번 출력하는 프로그램을 작성하시오.
+        for (int i = 0; i < 10; i++) {
+            System.out.println("*");
+            try {
+                Thread.sleep(1000); // 1초간 쉰다 (1000 millis), 반드시 Exception 처리를 해줘야 함
+            }catch (InterruptedException e){
+                e.printStackTrace(); // Exception이 발생했을 떄, Exception 메세지만 출력하도록 하는 메소드
+            }
+        } // for 반복문 끝
+        System.out.println("end!");
+    }
+}
+```
+2. 출력 결과 (1초마다 * 이 하나씩 출력되고 +이 하나씩 출력됨)
+```text
+thread name : main
+start!
+**********++++++++++
+end!
+```
+
+### 예제 2 ( * 과 + 를 동시에 출력하고 싶다면?)
+
+1. MyThread 클래스
+```java
+// 1. Thread 클래스를 상속받는다
+public class MyThread extends Thread {
+    // 필드 선언
+    private String str;
+    
+    // 생성자 (String 을 받아들여 초기화)
+    public MyThread(String str){
+        this.str = str;
+    }
+    // 2. run() 메소드를 오버라이딩 한다.
+    // 동시에 실행시키고 싶은 코드를 작성한다.
+    @Override
+    public void run() {
+        String name = Thread.currentThread().getName();
+        System.out.println("--- " + name + " ---");
+        for (int i = 0; i < 10; i++) {
+            System.out.println(str); // 생성자에 * 을 넣어주면 * 이 출력될 것이고, + 를 넣어주면 + 가 출력될 것임
+                try {
+                    Thread.sleep(1000); // 1초간 쉰다 (1000 millis), 반드시 Exception 처리를 해줘야 함
+            }catch (InterruptedException e){
+                e.printStackTrace(); // Exception이 발생했을 떄, Exception 메세지만 출력하도록 하는 메소드
+            }
+        } // for 반복문 끝
+    }
+}
+```
+2. MyThreadExam 클래스
+```java
+public class MyThreadExam {
+    public static void main(String[] args) {
+        String name = Thread.currentThread().getName();
+        System.out.println("thread name : " + name);
+        System.out.println("start!");
+         
+        // 3. 스레드 객체 생성
+        MyThread mt1 = new MyThread("*");
+        MyThread mt2 = new MyThread("+");
+        
+        // 4. thread는 start() 메소드로 실행한다.
+        // start() 메소드를 만나게 되면 새로운 흐름이 시작됨
+        mt1.start();
+        mt2.start();
+        
+        System.out.println("end!");
+    }
+}
+```
+3. 출력 결과
+```text
+thread name : main
+start!
+end!
+--- Thread-1 ---
++--- Thread-0 ---
+*+*+*+*+*+*+*+*+*+*+
+```
+순서
+```text
+1. Thread 클래스를 상속받는다
+2. run() 메소드를 오버라이딩 한다.
+3. 스레드 객체 생성
+4. thread는 start() 메소드로 실행한다.
+```
+
+
+* `main()` 메소드가 실행되면서 main 스레드가 실행이 됨
+* 메인 스레드가 한줄 한줄 실행해 나가다가 `start()` 메소드를 만나게 되면 `mt1`에 해당하는 스레드가 발생하면서 `run()` 메소드가 실행됨 (흐름이 하나 더 생김)
+* `run()`이 실행되는 도중에 main 스레드는 그 다음 줄인 `mt2`를 실행하게 되면서 `run()` 메소드가 실행되고, 계속해서 main 스레드는 또 그 다음 줄을 실행
+
+→ 즉, 흐름이 3개가 되고 `main()` 메소드는 마지막으로 종료됨
+
+***`start()` 메소드는 Thread 실행 할 준비를 해주고, `run()` 메소드를 실행해주며 흐름이 하나 더 생긴다!!***
+
+이전까지는 main 메소드가 종료되면 프로그램이 끝난다는 것으로 알고 있었지만
+
+이제는 ***"모든 스레드가 종료됐을 떄 프로그램이 종료된다"*** 로 알고 있어야 한다!!
+
+---
+
+### Runnable 인터페이스를 구현하여 스레드 작성하기
+
+![img_40.png](img_40.png)
+
+Runnable 인터페이스는 `run()` 메소드를 갖고 있음. Runnalbe 을 구현해주고 `run()` 메소드를 오버라이드 구현해주면 됨.
+
+문제는 인터페이스이기 때문에 `start()` 메소드가 없음. `start()` 메소드는 Thread 클래스가 갖고 있음.
+
+Runnalbe 인터페이스를 구현하여 클래스를 만들면, 이 구현한 클래스를 Thread가 가지도록 해야한다.
+
+1. Runnable 인터페이스를 구현한 Xxx 클래스
+```java
+class Xxx implements Runnable {
+    // run() 메소드 오버라이딩
+    public void run() {
+        // 동시에 실행될 코드 작성
+    }
+}
+```
+Xxx 클래스 인스턴스 생성 후, Thread 인스턴스 생성자에 넣어준 뒤, start() 메소드 호출
+```java
+Xxx x = new Xxx();
+Thread t = new Thread(x);
+t.start();
+```
+이 스레드는 자신이 갖고 있는 Runnable 객체의 run() 메소드를 호출해주면서 새로운 흐름을 만듦.
+
+
+### 예제
+
+```java
+// 1. Runnable 인터페이스를 구현한다.
+public class MyRunnable implements Runnable {
+    // 필드 선언
+    private String str;
+  
+    // 생성자 (String 을 받아들여 초기화)
+    public MyThread(String str){
+      this.str = str;
+    }
+    
+    // 2. run() 메소드를 구현한다.
+    @Override
+    public void run() {
+        String name = Thread.currentThread().getName();
+        System.out.println("--- " + name + " ---");
+        
+        for (int i = 0; i < 10; i++) {
+            System.out.println(str); // 생성자에 * 을 넣어주면 * 이 출력될 것이고, + 를 넣어주면 + 가 출력될 것임
+            try {
+                Thread.sleep(1000); // 1초간 쉰다 (1000 millis), 반드시 Exception 처리를 해줘야 함
+            }catch (InterruptedException e){
+                e.printStackTrace(); // Exception이 발생했을 떄, Exception 메세지만 출력하도록 하는 메소드
+            }
+        } // for 반복문 끝
+    }
+}
+```
+2. MyThreadExam2 클래스
+```java
+public class MyThreadExam {
+    public static void main(String[] args) {
+        String name = Thread.currentThread().getName();
+        System.out.println("thread name : " + name);
+        System.out.println("start!");
+        
+        // 3. Runnable 객체 생성
+        MyRunnable mr1 = new MyRunnable("*");
+        MyRunnable mr2 = new MyRunnable("+");
+        
+        // 4. Thread 인스턴스 생성하는데, 생성자에 Runnable 인스턴스를 넣어준다.
+        Thread t1 = new Thread(mr1);
+        Thread t2 = new Thread(mr2);
+        
+        // 5. Thread가 갖고 있는 start() 메소드를 호출한다.
+        t1.start();
+        t2.start();
+      
+        System.out.println("end!");
+    }
+}
+```
+3. 출력 결과 (실행하다 보면 스레드는 서로 자원을 획득해서 빨리 실행하고 싶어하기 때문에 실행되는 결과가 항상 똑같진 않음 * 이 먼저 출력될수도 + 가 먼저 출력될 수도 있음.)
+```text
+thread name : main
+start!
+end!
+--- Thread-1 ---
++--- Thread-0 ---
+++*+*+*+*+*+**+*++*
+```
+순서
+```text
+1. Runnable 인터페이스를 구현한다.
+2. run() 메소드를 오버라이딩 한다.
+3. Runnable 객체 생성
+4. Thread 인스턴스 생성하는데, 생성자에 Runnable 인스턴스를 넣어준다.
+5. Thread가 갖고 있는 start() 메소드를 호출한다.
+```
 <br/><br/>
 
 >**Reference**

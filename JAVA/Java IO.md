@@ -17,7 +17,7 @@
 ### Java IO는 조립되어 사용되도록 만들어짐
 * Decorator 패턴(디자인 패턴 중 하나) 으로 만들어졌다.
 
-![img_6.png](img_6.png)
+![img_6.png](photo/img_6.png)
 
 * Component 라는 부모클래스, 이를 상속받고 있는 ConcreteComponent(주인공), Decortator(장식)
 * 초록색 화살표로 되있는 것 → Decortator는 component 역할을 수행하는 것들을 가질 수 있다 라는 뜻 </br>
@@ -41,7 +41,7 @@
 --- 
 
 ### Java IO의 클래스 상속도
-![img_7.png](img_7.png)
+![img_7.png](photo/img_7.png)
 
 * InputStream, OutputSteram, Reader, Writer 4가지 추상 클래스가 중요!
 * 4가지 추상 클래스를 각각 상속받고 있는 클래스들로 구성되어 있음
@@ -71,9 +71,9 @@ ___
 * 장식은 InputStream, OutputStream, Reader, Writer를 생성자에서 받아들인다.
 
 Java api java.io 검색 후 공식문서 들어가서 Frames 클릭 → java.io 패키지 접속</br>
-![img_8.png](img_8.png)
+![img_8.png](photo/img_8.png)
 BufferedInputStream 들어가 보면 InputStream을 상속받는 것을 알 수 있음
-![img_9.png](img_9.png)
+![img_9.png](photo/img_9.png)
 생성자를 보면 InputStream을 받아들이는 것을 알 수 있다.</br>
 **InputStream, OutputStream, Reader, Writer를 생성자에서 받아들이는 클래스는 전부 다 장식 역할**</br>
 **InputStream, OutputStream, Reader, Writer를 생성자에서 받아들이지 않는 클래스는 전부 다 주인공 역할**</br>
@@ -124,10 +124,10 @@ public class KeyboardIOExam {
 키보드는 System.in → InputStream 타입이며</br>
 InputStreamReader(InputStream in) 은 InputStream을 받아들이므로</br>
 BufferedReader 의 생성자 안에 들어갈 수가 있다!
-![img_10.png](img_10.png)
+![img_10.png](photo/img_10.png)
 * 순서
 
-![img_11.png](img_11.png)
+![img_11.png](photo/img_11.png)
 값을 입력하면 System.in 이 읽어들이고, 읽어들인 것을 InputStreamReader한테 전달하며 이걸 또 BufferedReader에게 전달하며 문자열로 리턴해주는 순서로 구성
 
 ***Java IO 가 제공해주는 클래스를 적절하게 이용하게 되면 적절하게 다양한 곳에 유용하게 쓸 수가 있다!!***
@@ -210,10 +210,10 @@ public class FileInfo {
 현재는 아규먼트가 0 이기 때문에 맨 위의 코드가 실행됨
 
 여기서 아규먼트 값으로 . 을 넣어주게 되면
-![img_12.png](img_12.png)
+![img_12.png](photo/img_12.png)
 
 다음과 같이 출력이 되는 것을 볼 수 있다.
-![img_13.png](img_13.png)
+![img_13.png](photo/img_13.png)
 FileInfo 뒤에 . 이 붙은 것을 볼 수 있는데 여기서 . 은 현재 자바가 실행되는 경로를 말함.</br>
 현재 리렉토리를 의미하므로 읽고 쓸 수 있다는 반환값 trueㅇ 출력하는 것을 볼 수 있다.
 
@@ -221,7 +221,7 @@ FileInfo 뒤에 . 이 붙은 것을 볼 수 있는데 여기서 . 은 현재 자
 ---
 
 ### Byte Stream
-![img_14.png](img_14.png)
+![img_14.png](photo/img_14.png)
 
 ---
 
@@ -298,31 +298,31 @@ byte 또는 char의 흐름
 
 ### Byte Input Stream Hierarchy
 
-![img_15.png](img_15.png)
+![img_15.png](photo/img_15.png)
 
 ---
 
 ### Byte Output Stream Hierarchy
 
-![img_16.png](img_16.png)
+![img_16.png](photo/img_16.png)
 
 ---
 
 ### Character Input Stream Hierarchy
 
-![img_17.png](img_17.png)
+![img_17.png](photo/img_17.png)
 
 ---
 
 ### Character Output Stream Hierarchy
 
-![img_18.png](img_18.png)
+![img_18.png](photo/img_18.png)
 
 ---
 
 ### InputStream 정리
 
-![img_21.png](img_21.png)
+![img_21.png](photo/img_21.png)
 * InputStream 은 추상클래스이기 떄문에 new 연산자로 인스턴스를 생성할 수 없음!
 * 읽어들여야 할 대상이 있는데 이를 읽어들이기 위해서는 InputStream을 이용하며 InputStream은 `read()` 라는 메소드를 갖고 있음.
 * `read()` 라는 메소드는 byte 단위로 읽어들이는데 read() 메소드를 사용하게 되면 읽어들여야 할 대상으로부터 1byte씩 읽어들임.
@@ -332,7 +332,7 @@ byte 또는 char의 흐름
 ---
 
 ### OutputStream 정리
-![img_20.png](img_20.png)
+![img_20.png](photo/img_20.png)
 
 * InputStream 은 추상클래스이기 떄문에 new 연산자로 인스턴스를 생성할 수 없음!
 * OutputStream이 갖고 있는 `write()` 메소드에 정수값을 넣어주면 정수의 맨 끝에 1byte가 써야 할 대상에 저장이 됨.
@@ -420,7 +420,7 @@ public class HelloIO02 {
 ---
 
 ### Reader 정리
-![img_24.png](img_24.png)
+![img_24.png](photo/img_24.png)
 * Reader는 추상클래스이기 떄문에 new 연산자로 인스턴스를 생성할 수 없음!
 * Reader를 이용하게 되면 읽어들여야 할 대상으로부터 읽어들임. (생성자에 들어온 값)
 * Reader는 문자단위(char)로 읽어들임. 1개의 문자는 2byte를 차지함.
@@ -430,7 +430,7 @@ public class HelloIO02 {
 ---
 
 ### writer 정리
-![img_19.png](img_19.png)
+![img_19.png](photo/img_19.png)
 * Writer는 추상클래스이기 떄문에 new 연산자로 인스턴스를 생성할 수 없음!
 * writer를 이용하게 되면 써야 할 대상으로부터 써줌. (생성자에 들어온 값)
 * `write(int)` → write에 int 값을 넣어주게 되면 정수의 끝에 있는 2byte를 써야 할 대상에 써줌
@@ -532,7 +532,7 @@ public class HelloIO04 {
 
 ### 연결해서 다양하게 쓰이는 Java IO
 
-![img_22.png](img_22.png)
+![img_22.png](photo/img_22.png)
 
 * 읽어들여야 할 대상이 File이다 → `FileInputStream`의 `read()` 메소드를 사용하여 읽어들임.
 * `IO` 클래스 중 `InputStreamReader(InputStream)`는 `InputStream`을 통해 읽어들이겠다는 뜻 → `InputStreamReader`는 문자를 리턴해주는 `read()` 메소드를 갖고 있음
@@ -638,7 +638,7 @@ world
 
 ### Composite 패턴
 
-![img_23.png](img_23.png)
+![img_23.png](photo/img_23.png)
 
 * 위의 그림에서는 interface로 예시가 나와있는데 추상클래스도 가능하다.
 * Folder와 File은 모두 FileComponent를 상속받고 있음 
@@ -770,14 +770,14 @@ public class CompositePatternDemo {
 ---
 
 ### Decorator 패턴
-![img_6.png](img_6.png)
+![img_6.png](photo/img_6.png)
 * Composite 패턴과 거의 비슷함
 * Component와 Component를 상속받고 있는 ConcreteComponent 객체, Decorator 객체가 있음. (보통 대부분 추상 클래스)
 * 그리고 Decorator를 상속받고 있는 또 다른 객체가 있을 수 있음.
 * Decorator는 Component를 가질 수 있으며, 이는 Component를 상속받고 모든 있는 것들을 가질 수 있다는 의미
 
 ### Decorator 패턴 예시
-![img_25.png](img_25.png)
+![img_25.png](photo/img_25.png)
 * Shape와 Shape를 상속받고 있는 Circle, Rectangle 클래스가 있음.
 * Circle, Rectangle을 장식할 수 있는 ShapeDecorator, RedShapeDecorator 클래스가 있음.
 * ShapeDecorator는 장식할 대상을 갖고 있어야하기 때문에 Shape 클래스를 가지는 관계로 표현되어 있음.
@@ -1368,7 +1368,7 @@ User{email='d@example.com', name='둘리', birthYear=1991}
 2
 2
 ```
-![img_26.png](img_26.png)
+![img_26.png](photo/img_26.png)
 같은 ArrayList를 참조하고 있기 때문에 size값이 동일한 것을 알 수 있음!
 
 1. ObjectInputExam2 클래스 (ver3)
@@ -1401,7 +1401,7 @@ public class InputOutputExam {
 }
 ```
 
-![img_27.png](img_27.png)
+![img_27.png](photo/img_27.png)
 
 ArrayList 자체는 별도로 따로 생겼지만 같은 User를 참조하고 있기 때문에 User의 정보를 변경하게 되면 list와 list2의 정보가 바뀌게 된다.
 

@@ -166,7 +166,7 @@ B 사용자는 `ExceptionObj1` 클래스를 사용하는데 오류없이 실행�
 ---
 
 ### `RuntimeException`과 `Checked Exception`
-![img_4.png](img_4.png)
+![img_4.png](photo/img_4.png)
 
 `RuntimeException`
 * 실행 시에 오류가 나서 프로그램이 종료되는 Exception, 특별한 경우에만 오류가 발생
@@ -174,7 +174,7 @@ B 사용자는 `ExceptionObj1` 클래스를 사용하는데 오류없이 실행�
 * `RuntimeException` 클래스를 상속받고 있는 Exception은 전부 `RuntimeException`이다.
 * `ArithmeticException`도 `RuntimeException`에 해당
 
-![img_5.png](img_5.png)
+![img_5.png](photo/img_5.png)
 
 `Checked Exception`
 * `RuntimeException`을 상속받지 않은 기본적인 `Exception`을 상속받고 있는 것들을 모두 `Checked Exception`이라고 함
